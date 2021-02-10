@@ -1,12 +1,16 @@
 'use strict';
-
+/**
+ * The class that contains all the logic for the application
+ */
 class App {
   #map; // private
   #mapEvent;
   #addTriggered = false;
   #workouts = [];
   //#markergroup;
-
+  /**
+   * The constructor of the app class
+   */
   constructor() {
     //get user position
     this._getPosition();
@@ -24,8 +28,8 @@ class App {
     // });
   }
   /**
-   *  this method will get our current position.
-   *  then use the _loadMap as a callBack to load the map
+   * a method that move the map to the marker on click
+   * @param {Object} e click event
    */
   _moveToMarker(e) {
     const clicked = e.target.closest('.workout');
@@ -35,6 +39,9 @@ class App {
       this.#map.panTo(new L.LatLng(...workout.coords));
     }
   }
+  /**
+   *  this method will get our current position.
+   */
   _getPosition() {
     if (navigator.geolocation)
       // to execute only on browsers where the api is supported
@@ -47,7 +54,7 @@ class App {
   }
   /**
    * This method will load the map
-   * @param {*} position object where we can retrieve lat and lng
+   * @param {Object} position object where we can retrieve lat and lng
    */
   _loadMap(position) {
     const { latitude } = position.coords;
@@ -70,7 +77,7 @@ class App {
   /**
    * This method is the call back for map event listener.
    * It will show the form each time we click on the map.
-   * @param {*} e
+   * @param {Object} e click event
    */
   _showForm(e) {
     this.#mapEvent = e;
@@ -83,7 +90,7 @@ class App {
    * this.method is the callback of type input field.
    * is is triggered on change .
    * and it is used to make the elevation gain input appear.
-   * @param {*} e
+   * @param {Object} e click event
    */
   _toggleElevationField(e) {
     inputCadence.closest('.form__row').classList.toggle('form__row--hidden');
@@ -93,7 +100,7 @@ class App {
 
   /**
    * This method is used to add a pin on the map for the workout
-   * @param {*} e
+   * @param {*} e click event
    */
   _newWorkout(e) {
     //display the marker
@@ -170,7 +177,7 @@ class App {
   }
 
   /**
-   * Add workouts from storage
+   * Add workouts from browser local storage into the list.
    */
   _renderWorkoutList(workout) {
     let classN;
@@ -194,6 +201,11 @@ class App {
       );
     }
   }
+
+  /**
+   * Add workouts marker from browser local storage to the map
+   * @param {Object} workout
+   */
   _renderWorkoutMarker(workout) {
     let classN;
     let type;
@@ -227,6 +239,10 @@ class App {
       .openPopup();
   }
 
+  /**
+   * format the date to mm dd format where mm is the full month name
+   * @param {Date} date
+   */
   _formatDataDate(date) {
     const day = date.getDate();
     const month = months[date.getMonth()];
@@ -248,6 +264,9 @@ class App {
     return check;
   }
 
+  /**
+   * check if the values in the input are valid
+   */
   _inputValidation() {
     if (inputDistance.value <= 0 || inputDuration.value <= 0) {
       alert(
@@ -274,17 +293,30 @@ class App {
     return true;
   }
 
+  /**
+   * Hide the form
+   */
   _hideForm() {
     form.classList.add('hidden');
   }
 
+  /**
+   * return a date that is formated
+   */
   _activityDate() {
     const date = new Date();
-    const day = date.getDate();
-    const month = months[date.getMonth()];
-    return `${month} ${day}`;
+    return this._formatDataDate(date);
   }
 
+  /**
+   * render a new Running block in the workout list on the UI
+   * @param {String|Number} distance
+   * @param {String|Number} time
+   * @param {String|Number} pace
+   * @param {String|Number} cadence
+   * @param {Date} date
+   * @param {String|Number} id
+   */
   _addRunningUi(distance, time, pace, cadence, date, id) {
     const html = `<li class="workout workout--running" data-id="${id}">
     <h2 class="workout__title">Running on ${date}</h2>
@@ -313,6 +345,15 @@ class App {
     form.insertAdjacentHTML('afterend', html);
   }
 
+  /**
+   * add a new Cycling block in the workout list on the UI
+   * @param {String|Number} distance
+   * @param {String|Number} time
+   * @param {String|Number} speed
+   * @param {String|Number} elevation
+   * @param {Date} date
+   * @param {String|Number} id
+   */
   _addCyclingUi(distance, time, speed, elevation, date, id) {
     const html = `<li class="workout workout--cycling" data-id="${id}">
     <h2 class="workout__title">Cycling on ${date}</h2>
@@ -341,6 +382,9 @@ class App {
     form.insertAdjacentHTML('afterend', html);
   }
 
+  /**
+   * A method to store the workouts in the browser local storage
+   */
   _setLocalStorage() {
     //we pass a string as the key, then the data to store
     //JSON.stringify convert object to string
@@ -348,6 +392,9 @@ class App {
     localStorage.setItem('workouts', JSON.stringify(this.#workouts));
   }
 
+  /**
+   * A method to get the workouts from the browser local storage and render them
+   */
   _getLocalStorage() {
     const data = JSON.parse(localStorage.getItem('workouts'));
 
