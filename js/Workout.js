@@ -22,7 +22,6 @@ class Workout {
   setId() {
     const date = new Date();
     const idProd = `${date.getFullYear()}${date.getDate()}${date.getMonth()}${date.getHours()}${date.getMinutes()}${date.getSeconds()}`;
-    console.log(idProd);
     return idProd;
   }
 
